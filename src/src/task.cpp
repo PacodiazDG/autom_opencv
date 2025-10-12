@@ -3,6 +3,7 @@
 #include "processing.hxx"
 #include "task.hxx"
 #include <serial.hxx>
+#include <unistd.h> // Required for sleep()
 
 
 #define DEBUG true
@@ -60,6 +61,7 @@ int task::task_function()
                         std::cerr << "Error enviando mensaje por serial." << std::endl;
                     }
                     std::cout << "Color naranja & operario detectado" << std::endl;
+                    sleep(10); // evitar múltiples envíos rápidos
                 }
             }
         }
