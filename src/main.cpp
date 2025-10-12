@@ -16,7 +16,7 @@ int main(int argc, char **argv) {
         for (auto &p : detected) {
             std::cout << " - " << p.first << ": " << (p.second * 100.0) << "%" << std::endl;
             if (p.first=="orange"){
-                std::cout <<"Color naranja & operario detectado"<<std::endl;
+                std::cout <<"Color  naranja & operario detectado"<<std::endl;
             }
         }
     }
