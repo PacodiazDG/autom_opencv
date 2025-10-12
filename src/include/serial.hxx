@@ -5,7 +5,7 @@
 // Small helper class that encapsulates image loading and red color detection
 class  Serial {
 public:
-    static int Conect();
+    static int Open();
 
 protected:
 private:
@@ -14,5 +14,3 @@ private:
 	cv::Mat mask_;
 	cv::Mat result_;
 };
-
-
