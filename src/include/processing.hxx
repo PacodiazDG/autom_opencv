@@ -12,6 +12,8 @@ public:
 	Processing();
 	// Load an image from disk. Returns true if successful.
 	bool loadImage(const std::string &path);
+	// Set image directly from a cv::Mat (e.g., camera frame or network stream)
+	void setImage(const cv::Mat &img);
 	// Run the red color detection pipeline
 	void detectRed();
 	// Detect multiple colors and return a vector of (color name, fraction of image [0..1])

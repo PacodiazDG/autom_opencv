@@ -13,6 +13,24 @@ bool Processing::loadImage(const std::string &path) {
 	return true;
 }
 
+void Processing::setImage(const cv::Mat &img) {
+	if (img.empty()) {
+		img_ = cv::Mat();
+		hsv_ = cv::Mat();
+		mask_ = cv::Mat();
+		result_ = cv::Mat();
+		return;
+	}
+	// Make a deep copy to own the data
+	img_.release();
+	img_.create(img.rows, img.cols, img.type());
+	img.copyTo(img_);
+	// Clear previous intermediate results
+	hsv_ = cv::Mat();
+	mask_ = cv::Mat();
+	result_ = cv::Mat();
+}
+
 void Processing::detectRed() {
 	if (img_.empty()) return;
 

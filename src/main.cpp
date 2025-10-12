@@ -1,28 +1,17 @@
 #include <iostream>
-#include "include/processing.hxx"
+#include "include/qthreads.hxx"  // Include the task function
 
 int main(int argc, char **argv) {
-    std::string path = "imagen.jpg";
-    if (argc > 1) path = argv[1];
 
-    Processing proc;
-    if (!proc.loadImage(path)) return -1;
-
-    auto detected = proc.detectColors(0.005);
-    if (detected.empty()) {
-        std::cout << "No se detectaron colores relevantes." << std::endl;
-    } else {
-        std::cout << "Colores detectados:" << std::endl;
-        for (auto &p : detected) {
-            std::cout << " - " << p.first << ": " << (p.second * 100.0) << "%" << std::endl;
-            if (p.first=="orange"){
-                std::cout <<"Color  naranja & operario detectado"<<std::endl;
-            }
-        }
+    std::cout << "Starting the application..." << std::endl;
+    // Call the task function
+    qthreads threads;
+    if (!threads.start()) {
+        std::cerr << "Failed to start threads." << std::endl;
+        return -1;
     }
-
-    //proc.showResults("DetectorColores");
-
-    cv::waitKey(0);
+    
+    std::cout << "Application finished." << std::endl;
     return 0;
+
 }

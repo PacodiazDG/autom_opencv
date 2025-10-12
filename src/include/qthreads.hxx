@@ -1,19 +1,22 @@
-#include <string>
-#include <iostream>
+#pragma once
+
 #include <thread>
+#include <atomic>
 
 class qthreads
 {
-private:
-    /* data */
 public:
-    static int init();
+    qthreads();
+    ~qthreads();
+
+    // Start camera and serial worker threads
+    bool start();
+    void stop();
+
+private:
+    std::thread camThread_;
+    std::thread serialThread_;
+    std::atomic<bool> running_{false};
 };
 
-qthreads::qthreads(/* args */)
-{
-}
 
-qthreads::~qthreads()
-{
-}
