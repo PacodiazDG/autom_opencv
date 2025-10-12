@@ -148,7 +148,7 @@ bool Serial::startReader()
                 while ((pos = messageBuffer.find('\n')) != std::string::npos)
                 {
                     std::string completeMessage = messageBuffer.substr(0, pos);
-                    std::cout << "[Serial RX] " << completeMessage << std::endl;
+                    std::cout << "[Serial RX] hi" << completeMessage << std::endl;
                     messageBuffer.erase(0, pos + 1); // Eliminar el mensaje procesado
                 }
             }
