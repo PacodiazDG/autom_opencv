@@ -49,11 +49,26 @@ int task::task_function()
         }
         else
         {
+
             std::cout << "Colores detectados:" << std::endl;
             for (auto &p : detected)
             {
                 std::cout << " - " << p.first << ": " << (p.second * 100.0) << "%" << std::endl;
-                if (p.first == "orange")
+
+                if (p.first == "white" && ((p.second*100.0)>99))
+                {
+                   printf("Color blanco detectado, reiniciando...\n");
+                   sleep(5);
+                continue;
+            
+                }
+                else if (p.first=="black" && ((p.second*100.0)>99))
+                {
+                    printf("Color negro detectado, reiniciando...\n");
+                    sleep(10);
+                    continue;
+                }
+                else if(p.first == "orange")
                 {
                     // Notify Arduino over serial
                     if (!Serial::sendMessage("ORANGE\n"))
@@ -61,8 +76,9 @@ int task::task_function()
                         std::cerr << "Error enviando mensaje por serial." << std::endl;
                     }
                     std::cout << "Color naranja & operario detectado" << std::endl;
-                    sleep(10); // evitar múltiples envíos rápidos
+                    sleep(50); // evitar múltiples envíos rápidos
                 }
+            
             }
         }
 
