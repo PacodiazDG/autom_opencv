@@ -7,8 +7,6 @@
 #include <fcntl.h>
 #include <termios.h>
 
-// Minimal POSIX serial implementation (Linux). For Windows this would need
-// a separate implementation.
 
 Serial &Serial::instance()
 {
@@ -57,7 +55,7 @@ bool Serial::openPort(const std::string &device, int baud)
     tty.c_cflag &= ~CSTOPB;
 
     tty.c_cc[VMIN] = 0;
-    tty.c_cc[VTIME] = 5; // 0.5 seconds
+    tty.c_cc[VTIME] = 5; 
 
     if (tcsetattr(fd_, TCSANOW, &tty) != 0)
     {
@@ -115,11 +113,9 @@ bool Serial::send(const std::string &message)
         std::cerr << "Serial write failed: " << strerror(errno) << std::endl;
         return false;
     }
-    // Ensure data is transmitted out to the device (block until output flushed)
     if (tcdrain(fd_) != 0)
     {
         std::cerr << "tcdrain failed: " << strerror(errno) << std::endl;
-        // not fatal; we already wrote bytes
     }
     return true;
 }
@@ -143,13 +139,12 @@ bool Serial::startReader()
                 buf[n] = '\0';
                 messageBuffer += buf;
 
-                // Buscar fin de línea o delimitador
                 size_t pos;
                 while ((pos = messageBuffer.find('\n')) != std::string::npos)
                 {
                     std::string completeMessage = messageBuffer.substr(0, pos);
                     std::cout << "[Serial RX] hi" << completeMessage << std::endl;
-                    messageBuffer.erase(0, pos + 1); // Eliminar el mensaje procesado
+                    messageBuffer.erase(0, pos + 1); 
                 }
             }
             else
@@ -168,26 +163,23 @@ void Serial::stopReader()
     readerRunning_.store(false);
 }
 
-// Static convenience wrapper implementation.
+
 bool Serial::sendMessage(const std::string &message)
 {
-    // If the port is not open, attempt a lazy open once. This helps when
-    // callers invoke sendMessage shortly after program start and the
-    // serial thread hasn't fully opened the device yet.
     Serial &s = Serial::instance();
     if (!s.isOpen())
     {
         std::cerr << "Serial::sendMessage() - port not open, attempting lazy open...\n";
-        // try common device - keep this consistent with qthreads
+    
         if (!s.openPort("/dev/ttyUSB0", 115200))
         {
             std::cerr << "Serial::sendMessage() - lazy open failed, queuing message for later\n";
-            // Queue the message to send later when port becomes available.
+    
             std::lock_guard<std::mutex> lk(s.writeMutex_);
             s.pendingMessages_.push_back(message);
             return true;
         }
-        // start reader if desired
+
         s.startReader();
     }
 
@@ -197,7 +189,7 @@ bool Serial::sendMessage(const std::string &message)
         std::cerr << "Serial::sendMessage() - send() failed, queuing message for later: '" << message << "'\n";
         std::lock_guard<std::mutex> lk(s.writeMutex_);
         s.pendingMessages_.push_back(message);
-        return true; // accepted for later delivery
+        return true; 
     }
     return true;
 }

@@ -9,7 +9,6 @@ public:
     qthreads();
     ~qthreads();
 
-    // Start camera and serial worker threads
     bool start();
     void stop();
 
@@ -18,5 +17,3 @@ private:
     std::thread serialThread_;
     std::atomic<bool> running_{false};
 };
-
-

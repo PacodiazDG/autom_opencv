@@ -17,14 +17,14 @@ bool qthreads::start()
 
     running_.store(true);
 
-    // Start serial thread: open port and run reader
+
     serialThread_ = std::thread([this]() {
         printf("Starting serial thread...\n");
         auto &s = Serial::instance();
         if (!s.openPort("/dev/ttyUSB0", 115200))
         {
             std::cerr << "Warning: could not open serial port /dev/ttyUSB0" << std::endl;
-            // keep thread alive but do nothing
+
             while (running_.load())
                 std::this_thread::sleep_for(std::chrono::seconds(1));
             return;
@@ -38,10 +38,9 @@ bool qthreads::start()
         s.closePort();
     });
 
-    // Start camera thread which calls task::task_function()
+
     camThread_ = std::thread([this]() {
-        // small delay to reduce race where camera detection happens before
-        // serial thread finishes opening the port. Wait up to 2 seconds.
+
         auto &s = Serial::instance();
         int waited = 0;
         while (!s.isOpen() && waited < 2000 && running_.load())
@@ -50,10 +49,10 @@ bool qthreads::start()
             waited += 50;
         }
 
-        // task::task_function is blocking until ESC or error
+
         int rc = task::task_function();
         (void)rc;
-        // if task ends, stop the whole system
+
         running_.store(false);
     });
 
