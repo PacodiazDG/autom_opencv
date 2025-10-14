@@ -58,14 +58,14 @@ int task::task_function()
                 if (p.first == "white" && ((p.second*100.0)>99))
                 {
                    printf("Color blanco detectado, reiniciando...\n");
-                   sleep(5);
+                   //sleep(5);
                 continue;
             
                 }
                 else if (p.first=="black" && ((p.second*100.0)>99))
                 {
                     printf("Color negro detectado, reiniciando...\n");
-                    sleep(10);
+                    //sleep(10);
                     continue;
                 }
                 else if(p.first == "orange")
