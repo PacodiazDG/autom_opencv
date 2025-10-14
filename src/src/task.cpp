@@ -3,20 +3,20 @@
 #include "processing.hxx"
 #include "task.hxx"
 #include <serial.hxx>
-#include <unistd.h> // Required for sleep()
+#include <unistd.h> 
 
 
 #define DEBUG true
 int task::task_function()
 {
-    // If DEBUG is defined we use the laptop camera (index 0).
-    // Otherwise we attempt to open an ESP32-CAM HTTP stream URL.
+    
+    
 #ifndef DEBUG
-    // Example ESP32-CAM stream URL (modify to your device IP/path)
-    const std::string esp32_url = "http://192.168.4.1:81/stream"; // change as needed
+    
+    const std::string esp32_url = "http://192.168.4.1:81/stream"; 
     cv::VideoCapture cap(esp32_url);
 #else
-    // Abrir la cámara local (0 es el índice de la cámara por defecto)
+    
     cv::VideoCapture cap(0);
 #endif
     if (!cap.isOpened())
@@ -39,8 +39,8 @@ int task::task_function()
             break;
         }
 
-    // Use the Processing API that accepts a cv::Mat frame directly.
-    proc.setImage(frame); // setImage() ahora acepta cv::Mat (desde processing.hxx)
+    
+    proc.setImage(frame); 
 
         auto detected = proc.detectColors(0.005);
         if (detected.empty())
@@ -70,22 +70,22 @@ int task::task_function()
                 }
                 else if(p.first == "orange")
                 {
-                    // Notify Arduino over serial
+                    
                     if (!Serial::sendMessage("ORANGE\n"))
                     {
                         std::cerr << "Error enviando mensaje por serial." << std::endl;
                     }
                     std::cout << "Color naranja & operario detectado" << std::endl;
-                    sleep(50); // evitar múltiples envíos rápidos
+                    sleep(50); 
                 }
             
             }
         }
 
-        // Mostrar resultados visuales
+        
         proc.showResults("DetectorColores");
 
-        // Salir con ESC
+        
         if (cv::waitKey(30) == 27)
             break;
     }
