@@ -21,5 +21,9 @@ include_directories(${OpenCV_INCLUDE_DIRS})
 # Crear ejecutable
 add_executable(programa ${SOURCES})
 
+
+find_package(PkgConfig REQUIRED)
+pkg_check_modules(ZBar REQUIRED IMPORTED_TARGET zbar)
+
 # Vincular OpenCV si es necesario
-target_link_libraries(programa ${OpenCV_LIBS})
+target_link_libraries(programa ${OpenCV_LIBS} PkgConfig::ZBar)

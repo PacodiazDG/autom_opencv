@@ -3,20 +3,18 @@
 #include "processing.hxx"
 #include "task.hxx"
 #include <serial.hxx>
-#include <unistd.h> 
+#include <unistd.h>
+using namespace zbar;
 
-
-#define DEBUG true
 int task::task_function()
 {
-    
-    
+
 #ifndef DEBUG
-    
-    const std::string esp32_url = "http://192.168.4.1:81/stream"; 
-    cv::VideoCapture cap(esp32_url);
+
+    const std::string esp32_url = "http://10.0.1.58:81/stream";
+    cv::VideoCapture cap(esp32_url, cv::CAP_FFMPEG);
 #else
-    
+
     cv::VideoCapture cap(0);
 #endif
     if (!cap.isOpened())
@@ -36,12 +34,14 @@ int task::task_function()
         if (frame.empty())
         {
             std::cerr << "Error capturando frame." << std::endl;
-            break;
+            sleep(3);
+            std::cout << "Reintentando...\n";
+            continue;
         }
 
-    
-    proc.setImage(frame); 
-
+        proc.setImage(frame);
+        detectCodes(frame);
+#ifdef Operador
         auto detected = proc.detectColors(0.005);
         if (detected.empty())
         {
@@ -54,44 +54,63 @@ int task::task_function()
             for (auto &p : detected)
             {
                 std::cout << " - " << p.first << ": " << (p.second * 100.0) << "%" << std::endl;
+                if (p.first == "orange")
+                {
 
-                if (p.first == "white" && ((p.second*100.0)>99))
-                {
-                   printf("Color blanco detectado, reiniciando...\n");
-                   //sleep(5);
-                continue;
-            
-                }
-                else if (p.first=="black" && ((p.second*100.0)>99))
-                {
-                    printf("Color negro detectado, reiniciando...\n");
-                    //sleep(10);
-                    continue;
-                }
-                else if(p.first == "orange")
-                {
-                    
                     if (!Serial::sendMessage("ORANGE\n"))
                     {
                         std::cerr << "Error enviando mensaje por serial." << std::endl;
                     }
                     std::cout << "Color naranja & operario detectado" << std::endl;
-                    sleep(50); 
+                    sleep(50);
                 }
-            
             }
         }
+#endif
 
-        
+#ifndef realses
         proc.showResults("DetectorColores");
 
-        
         if (cv::waitKey(30) == 27)
             break;
     }
+#endif
 
     cap.release();
     cv::destroyAllWindows();
     return 0;
 }
 
+std::vector<std::string> task::detectCodes(const cv::Mat &frame)
+{
+    std::vector<std::string> results;
+    if (frame.empty())
+    {
+        std::cerr << "Frame vacío, no se puede procesar." << std::endl;
+        return results;
+    }
+    cv::Mat gray;
+    cv::cvtColor(frame, gray, cv::COLOR_BGR2GRAY);
+    ImageScanner scanner;
+    scanner.set_config(ZBAR_NONE, ZBAR_CFG_ENABLE, 1);
+    Image zbarImage(
+        gray.cols,
+        gray.rows,
+        "Y800",
+        gray.data,
+        gray.cols * gray.rows);
+
+    int n = scanner.scan(zbarImage);
+    if (n <= 0)
+    {
+        return results;
+    }
+    for (auto it = zbarImage.symbol_begin(); it != zbarImage.symbol_end(); ++it)
+    {
+        std::string type = it->get_type_name();
+        std::string data = it->get_data();
+        std::cout << "[Detectado] Tipo: " << type << " | Dato: " << data << std::endl;
+        results.push_back(data);
+    }
+    return results;
+}
