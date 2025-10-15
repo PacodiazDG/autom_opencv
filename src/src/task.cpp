@@ -11,7 +11,7 @@ int task::task_function()
 
 #ifndef DEBUG
 
-    const std::string esp32_url = "http://10.0.1.58:81/stream";
+    const std::string esp32_url = "http://192.168.8.139:81/stream";
     cv::VideoCapture cap(esp32_url, cv::CAP_FFMPEG);
 #else
 
@@ -62,7 +62,7 @@ int task::task_function()
                         std::cerr << "Error enviando mensaje por serial." << std::endl;
                     }
                     std::cout << "Color naranja & operario detectado" << std::endl;
-                    sleep(50);
+                   // sleep(50);
                 }
             }
         }

@@ -6,6 +6,7 @@ if ! ip link show wlan1 &> /dev/null; then
 fi
 
 sudo service hostapd start
-sudo ip addr add 192.168.10.1/24 dev wlan1
+sudo ip addr add 192.168.10.1/22 dev wlan0
 sudo service dnsmasq start
 
+sudo iptables -t nat -A POSTROUTING -o wlan1 -j MASQUERADE
