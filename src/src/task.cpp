@@ -11,7 +11,7 @@ int task::task_function()
 
 #ifndef DEBUG
 
-    const std::string esp32_url = "http://192.168.8.139:81/stream";
+    const std::string esp32_url = "http://10.28.190.156:81/stream";
     cv::VideoCapture cap(esp32_url, cv::CAP_FFMPEG);
 #else
 
